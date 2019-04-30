@@ -7,24 +7,25 @@ import org.junit.rules.ExpectedException;
 
 public class HttpNotificationPluginTest {
 
-    final String blank_url = "";
-    final String null_url = null;
-    final String valid_url_post = "https://postman-echo.com/post";
-    final String valid_url_put = "https://postman-echo.com/put";
+    private final String blank_url = "";
+    private final String null_url = null;
+    private final String valid_url_post = "https://postman-echo.com/post";
+    private final String valid_url_put = "https://postman-echo.com/put";
 
-    final String blank_content_type = "";
-    final String null_content_type = null;
-    final String unsupported_content_type = "pdf";
+    private final String blank_content_type = "";
+    private final String null_content_type = null;
+    private final String unsupported_content_type = "pdf";
 
-    final String unsupported_method = "DELETE";
-    final String blank_method = "";
-    final String null_method = null;
+    private final String unsupported_method = "DELETE";
+    private final String blank_method = "";
+    private final String null_method = null;
 
-    final String blank_body = "";
-    final String null_body = "";
+    private final String blank_body = "";
+    private final String null_body = "";
 
-    final String valid_json = "{\"name\":\"Ruben Gutierrez\", \"message\":\"This is a notification.\"}";
-    final String valid_text = "This is a notification";
+    private final String valid_json = "{\"name\":\"Ruben Gutierrez\", \"message\":\"This is a notification.\"}";
+    private final String invalid_json = "{\"name\"::::\"Ruben Gutierrez\", \"message\":\"This is a notification.\"}";
+    private final String valid_text = "This is a notification";
 
     HttpNotificationPlugin notificationPlugin = new HttpNotificationPlugin(0L,0L);
 
@@ -111,6 +112,13 @@ public class HttpNotificationPluginTest {
         notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, null_body);
     }
 
+    @Test
+    public void testInvalidJsonBody() throws HttpNotificationException {
+        exceptionRule.expect(HttpNotificationException.class);
+        exceptionRule.expectMessage("Error: Json is invalid.");
+
+        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_JSON, invalid_json);
+    }
     @Test
     public void testPostJsonNotification() throws HttpNotificationException {
         Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_JSON, valid_json);

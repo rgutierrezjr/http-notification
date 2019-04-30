@@ -6,6 +6,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.google.gson.Gson;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -19,7 +20,8 @@ import java.util.logging.Logger;
 @PluginDescription(title = "HTTP Notification Plugin", description = "Rundeck's http notification plugin.")
 public class HttpNotificationPlugin {
 
-    private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private static final Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    private static final Gson gson = new Gson();
 
     /*
         Plugin default request timeout lengths.
@@ -121,6 +123,10 @@ public class HttpNotificationPlugin {
 
         if (body == null || body.isEmpty()) {
             throw new HttpNotificationException("Error: Notification body is required.");
+        }
+
+        if (contentType == CONTENT_JSON && !isValidJson(body)) {
+            throw new HttpNotificationException("Error: Json is invalid.");
         }
 
         if (httpMethod == HTTP_METHOD_POST) {
@@ -231,6 +237,20 @@ public class HttpNotificationPlugin {
             throw new HttpNotificationException("Error: Server responded with client side error. Code: " + code);
         } else if (code >= 500 && code < 600) {
             throw new HttpNotificationException("Error: Server responded with server error. Code: " + code);
+        }
+    }
+
+    /**
+     * Simple helper method which determines whether or not the given body, type json, is valid.
+     * @param jsonInString
+     * @return
+     */
+    public static boolean isValidJson(String jsonInString) {
+        try {
+            gson.fromJson(jsonInString, Object.class);
+            return true;
+        } catch(com.google.gson.JsonSyntaxException ex) {
+            return false;
         }
     }
 }
