@@ -12,11 +12,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The following implementation of NotificationPlugin will post HTTP notification requests.
- * The user can pass body content, content type, and HTTP method type.
+ * The following implementation Http notification plugin will post requests to the target url.
+ * The user of this plugin can pass body content, content type, and HTTP method type.
  */
-@Plugin(service = "Notification", name = "my-example")
-@PluginDescription(title = "HTTP Notification Plugin", description = "An implementation of Rundeck's Notification Interface.")
+@Plugin(service = "Notification", name = "http-notification")
+@PluginDescription(title = "HTTP Notification Plugin", description = "Rundeck's http notification plugin.")
 public class HttpNotificationPlugin {
 
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);

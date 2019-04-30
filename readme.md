@@ -1,6 +1,6 @@
 # Plugin Example
 
-This is my implementation for specification HttpNotificationPlugin.
+This is my implementation for candidate consideration; specification HttpNotificationPlugin.
 
 ## Building
 
