@@ -1,6 +1,6 @@
 # Plugin Example
 
-This is an base for a Rundeck Notification plugin implementation.
+This is my implementation for specification HttpNotificationPlugin.
 
 ## Building
 

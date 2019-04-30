@@ -26,7 +26,7 @@ public class HttpNotificationPluginTest {
     final String valid_json = "{\"name\":\"Ruben Gutierrez\", \"message\":\"This is a notification.\"}";
     final String valid_text = "This is a notification";
 
-    HttpNotificationPlugin notificationPlugin = new HttpNotificationPlugin(0L,0L,0);
+    HttpNotificationPlugin notificationPlugin = new HttpNotificationPlugin(0L,0L);
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();

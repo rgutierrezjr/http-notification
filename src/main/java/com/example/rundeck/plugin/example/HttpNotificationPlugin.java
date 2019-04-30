@@ -22,20 +22,13 @@ public class HttpNotificationPlugin {
     private final static Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
     /*
-        Maximum number of attempts in which to make a successful request.
-     */
-    public static final Integer DEFAULT_MAX_ATTEMPTS = 5;
-
-    private Integer maxAttempts = DEFAULT_MAX_ATTEMPTS;
-
-    /*
         Plugin default request timeout lengths.
      */
     public static final Long DEFAULT_CONNECTION_TIMEOUT = 10000L;
     public static final Long DEFAULT_SOCKET_TIMEOUT = 60000L;
 
-    private Long connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
-    private Long socketTimeout = DEFAULT_SOCKET_TIMEOUT;
+    private Long connectionTimeout;
+    private Long socketTimeout;
 
     /*
         Supported HTTP methods.
@@ -49,24 +42,54 @@ public class HttpNotificationPlugin {
         Supported content types.
      */
     public static final String CONTENT_JSON = "application/json";
-    public static final String CONTENT_TEXT = "application/text";
+    public static final String CONTENT_TEXT = "text/plain";
 
     public static final List<String> SUPPORTED_CONTENT_TYPES = Arrays.asList(CONTENT_JSON, CONTENT_TEXT);
 
-    public HttpNotificationPlugin(Long connectionTimeout, Long socketTimeout, Integer maxAttempts) {
-        if (connectionTimeout != null && connectionTimeout > 0L) {
-            this.connectionTimeout = connectionTimeout;
-        }
+    public HttpNotificationPlugin(Long connectionTimeout, Long socketTimeout) {
 
-        if (socketTimeout != null && socketTimeout > 0L) {
-            this.socketTimeout = socketTimeout;
-        }
+        this.connectionTimeout = connectionTimeout != null && connectionTimeout > 0L ? connectionTimeout : DEFAULT_CONNECTION_TIMEOUT;
 
-        if (maxAttempts != null && maxAttempts > 0) {
-            this.maxAttempts = maxAttempts;
-        }
+        this.socketTimeout = socketTimeout != null && socketTimeout > 0L ? socketTimeout : DEFAULT_SOCKET_TIMEOUT;
 
         Unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
+
+    }
+
+    /**
+     * Getter method for connectionTimout.
+     *
+     * @return
+     */
+    public Long getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    /**
+     * Setter method for connectionTimout.
+     *
+     * @param connectionTimeout
+     */
+    public void setConnectionTimeout(Long connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    /**
+     * Getter method for socketTimeout.
+     *
+     * @return
+     */
+    public Long getSocketTimeout() {
+        return socketTimeout;
+    }
+
+    /**
+     * Setter method for socketTimout.
+     *
+     * @param socketTimeout
+     */
+    public void setSocketTimeout(Long socketTimeout) {
+        this.socketTimeout = socketTimeout;
     }
 
     /**
@@ -76,7 +99,8 @@ public class HttpNotificationPlugin {
      * @param httpMethod  The HTTP method to use.
      * @param contentType Request header content type.
      * @param body        The notification body.
-     * @return
+     * @return True if successful, False if not.
+     * @throws HttpNotificationException
      */
     public Boolean sendNotification(String url, String httpMethod, String contentType, String body) throws HttpNotificationException {
         if (url == null || url.isEmpty()) {
@@ -110,29 +134,42 @@ public class HttpNotificationPlugin {
 
     /**
      * The following helper method will POST an HttpNotification (body) to the designated url.
-     * @param url
-     * @param contentType
-     * @param body
+     *
+     * @param url         The designated endpoint accepting the notification.
+     * @param contentType Request header content type.
+     * @param body        The notification body.
      * @return True if successful, False if not.
+     * @throws HttpNotificationException
      */
-    private Boolean postNotification(String url, String contentType, String body) {
+    private Boolean postNotification(String url, String contentType, String body) throws HttpNotificationException {
+        Integer statusCode = 0;
 
         try {
             if (contentType == CONTENT_JSON) {
                 HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
-                        .header("content-type", "application/json")
+                        .header("Content-Type", "application/json")
                         .body(body)
                         .asJson();
 
+                statusCode = jsonResponse.getStatus();
+
             } else if (contentType == CONTENT_TEXT) {
                 HttpResponse response = Unirest.post(url)
+                        .header("Content-Type", "text/plain")
                         .body(body)
                         .asString();
+
+                statusCode = response.getStatus();
+
             }
         } catch (UnirestException e) {
-            LOGGER.log(Level.SEVERE, "Failed to POST Http Notification.");
+            LOGGER.log(Level.SEVERE, "Error: Failed to POST Http Notification.");
 
             return false;
+        }
+
+        if (statusCode >= 400) {
+            throwStatusCodeException(statusCode);
         }
 
         return true;
@@ -140,31 +177,60 @@ public class HttpNotificationPlugin {
 
     /**
      * The following helper method will PUT an HttpNotification (body) to the designated url.
-     * @param url
-     * @param contentType
-     * @param body
+     *
+     * @param url         The designated endpoint accepting the notification.
+     * @param contentType Request header content type.
+     * @param body        The notification body.
      * @return True if successful, False if not.
+     * @throws HttpNotificationException
      */
-    private Boolean putNotification(String url, String contentType, String body) {
+    private Boolean putNotification(String url, String contentType, String body) throws HttpNotificationException {
+        Integer statusCode = 0;
 
         try {
             if (contentType == CONTENT_JSON) {
                 HttpResponse<JsonNode> jsonResponse = Unirest.put(url)
-                        .header("content-type", "application/json")
+                        .header("Content-Type", "application/json")
                         .body(body)
                         .asJson();
+
+                statusCode = jsonResponse.getStatus();
+
             } else if (contentType == CONTENT_TEXT) {
                 HttpResponse response = Unirest.put(url)
+                        .header("Content-Type", "text/plain")
                         .body(body)
                         .asString();
+
+                statusCode = response.getStatus();
+
             }
         } catch (UnirestException e) {
-            LOGGER.log(Level.SEVERE, "Failed to PUT Http Notification.");
+            LOGGER.log(Level.SEVERE, "Error: Failed to PUT Http Notification.");
 
             return false;
         }
 
+        if (statusCode >= 400) {
+            throwStatusCodeException(statusCode);
+        }
 
         return true;
+    }
+
+    /**
+     * This helper method will derive and throw a new HttpNotificationException based on the Http status code.
+     *
+     * @param code The Http status code returned by the client.
+     * @throws HttpNotificationException
+     */
+    private void throwStatusCodeException(Integer code) throws HttpNotificationException {
+        if (code >= 300 && code < 400) {
+            throw new HttpNotificationException("Error: Server responded with redirection. Code: " + code);
+        } else if (code >= 400 && code < 500) {
+            throw new HttpNotificationException("Error: Server responded with client side error. Code: " + code);
+        } else if (code >= 500 && code < 600) {
+            throw new HttpNotificationException("Error: Server responded with server error. Code: " + code);
+        }
     }
 }
