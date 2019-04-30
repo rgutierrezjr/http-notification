@@ -8,6 +8,14 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.google.gson.Gson;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
+
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,8 +53,9 @@ public class HttpNotificationPlugin {
      */
     public static final String CONTENT_JSON = "application/json";
     public static final String CONTENT_TEXT = "text/plain";
+    public static final String CONTENT_XML = "text/xml";
 
-    public static final List<String> SUPPORTED_CONTENT_TYPES = Arrays.asList(CONTENT_JSON, CONTENT_TEXT);
+    public static final List<String> SUPPORTED_CONTENT_TYPES = Arrays.asList(CONTENT_JSON, CONTENT_TEXT, CONTENT_XML);
 
     public HttpNotificationPlugin(Long connectionTimeout, Long socketTimeout) {
 
@@ -129,6 +138,10 @@ public class HttpNotificationPlugin {
             throw new HttpNotificationException("Error: Json is invalid.");
         }
 
+        if (contentType == CONTENT_XML && !isValidXml(body)) {
+            throw new HttpNotificationException("Error: Xml is invalid.");
+        }
+
         if (httpMethod == HTTP_METHOD_POST) {
             return postNotification(url, contentType, body);
         } else if (httpMethod == HTTP_METHOD_PUT) {
@@ -149,23 +162,26 @@ public class HttpNotificationPlugin {
      */
     private Boolean postNotification(String url, String contentType, String body) throws HttpNotificationException {
         Integer statusCode = 0;
+        String statusText = "";
 
         try {
             if (contentType == CONTENT_JSON) {
                 HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
-                        .header("Content-Type", "application/json")
+                        .header("Content-Type", contentType)
                         .body(body)
                         .asJson();
 
                 statusCode = jsonResponse.getStatus();
+                statusText = jsonResponse.getStatusText();
 
-            } else if (contentType == CONTENT_TEXT) {
+            } else if (contentType == CONTENT_TEXT || contentType == CONTENT_XML) {
                 HttpResponse response = Unirest.post(url)
-                        .header("Content-Type", "text/plain")
+                        .header("Content-Type", contentType)
                         .body(body)
                         .asString();
 
                 statusCode = response.getStatus();
+                statusText = response.getStatusText();
 
             }
         } catch (UnirestException e) {
@@ -175,7 +191,7 @@ public class HttpNotificationPlugin {
         }
 
         if (statusCode >= 300) {
-            throwStatusCodeException(statusCode);
+            throwStatusCodeException(statusCode, statusText);
         }
 
         return true;
@@ -192,23 +208,26 @@ public class HttpNotificationPlugin {
      */
     private Boolean putNotification(String url, String contentType, String body) throws HttpNotificationException {
         Integer statusCode = 0;
+        String statusText = "";
 
         try {
             if (contentType == CONTENT_JSON) {
                 HttpResponse<JsonNode> jsonResponse = Unirest.put(url)
-                        .header("Content-Type", "application/json")
+                        .header("Content-Type", contentType)
                         .body(body)
                         .asJson();
 
                 statusCode = jsonResponse.getStatus();
+                statusText = jsonResponse.getStatusText();
 
-            } else if (contentType == CONTENT_TEXT) {
+            } else if (contentType == CONTENT_TEXT || contentType == CONTENT_XML) {
                 HttpResponse response = Unirest.put(url)
-                        .header("Content-Type", "text/plain")
+                        .header("Content-Type", contentType)
                         .body(body)
                         .asString();
 
                 statusCode = response.getStatus();
+                statusText = response.getStatusText();
 
             }
         } catch (UnirestException e) {
@@ -218,7 +237,7 @@ public class HttpNotificationPlugin {
         }
 
         if (statusCode >= 300) {
-            throwStatusCodeException(statusCode);
+            throwStatusCodeException(statusCode, statusText);
         }
 
         return true;
@@ -230,27 +249,45 @@ public class HttpNotificationPlugin {
      * @param code The Http status code returned by the client.
      * @throws HttpNotificationException
      */
-    private void throwStatusCodeException(Integer code) throws HttpNotificationException {
+    private void throwStatusCodeException(Integer code, String codeText) throws HttpNotificationException {
         if (code >= 300 && code < 400) {
-            throw new HttpNotificationException("Error: Server responded with redirection. Code: " + code);
+            throw new HttpNotificationException("Error: Server responded with redirection. Code: " + code + ", Text: " + codeText);
         } else if (code >= 400 && code < 500) {
-            throw new HttpNotificationException("Error: Server responded with client side error. Code: " + code);
+            throw new HttpNotificationException("Error: Server responded with client side error. Code: " + code  + ", Text: " + codeText);
         } else if (code >= 500 && code < 600) {
-            throw new HttpNotificationException("Error: Server responded with server error. Code: " + code);
+            throw new HttpNotificationException("Error: Server responded with server error. Code: " + code  + ", Text: " + codeText);
         }
     }
 
     /**
      * Simple helper method which determines whether or not the given body, type json, is valid.
-     * @param jsonInString
+     * @param jsonString
      * @return
      */
-    public static boolean isValidJson(String jsonInString) {
+    public static boolean isValidJson(String jsonString) {
         try {
-            gson.fromJson(jsonInString, Object.class);
+            gson.fromJson(jsonString, Object.class);
             return true;
         } catch(com.google.gson.JsonSyntaxException ex) {
             return false;
         }
+    }
+
+    public static boolean isValidXml(String xmlString) {
+        StringWriter sw;
+
+        try {
+            final OutputFormat format = OutputFormat.createPrettyPrint();
+            final Document document = DocumentHelper.parseText(xmlString);
+            sw = new StringWriter();
+            final XMLWriter writer = new XMLWriter(sw, format);
+            writer.write(document);
+        } catch (DocumentException e) {
+            return false;
+        } catch (IOException e) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -1,6 +1,5 @@
 package com.example.rundeck.plugin.example;
 
-import junit.framework.TestCase;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,7 +26,17 @@ public class HttpNotificationPluginTest {
     private final String invalid_json = "{\"name\"::::\"Ruben Gutierrez\", \"message\":\"This is a notification.\"}";
     private final String valid_text = "This is a notification";
 
-    HttpNotificationPlugin notificationPlugin = new HttpNotificationPlugin(0L,0L);
+    private final String valid_xml = "<notification>\n" +
+            "<from>Rundeck</from>\n" +
+            "<message>This is a http notification.</message>\n" +
+            "</notification>";
+
+    private final String invalid_xml = "<notifications>\n" +
+            "<from>Rundeck<from>\n" +
+            "<message>This is a http notification.</message>\n" +
+            "</notification>";
+
+    HttpNotificationPlugin notificationPlugin = new HttpNotificationPlugin(0L, 0L);
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -119,11 +128,34 @@ public class HttpNotificationPluginTest {
 
         notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_JSON, invalid_json);
     }
+
     @Test
     public void testPostJsonNotification() throws HttpNotificationException {
         Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_JSON, valid_json);
 
         assert result == true;
+    }
+
+    @Test
+    public void testPutXmlNotification() throws HttpNotificationException {
+        Boolean result = notificationPlugin.sendNotification(valid_url_put, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_XML, valid_xml);
+
+        assert result == true;
+    }
+
+    @Test
+    public void testPostXmlNotification() throws HttpNotificationException {
+        Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_XML, valid_xml);
+
+        assert result == true;
+    }
+
+    @Test
+    public void testInvalidXmlNotification() throws HttpNotificationException {
+        exceptionRule.expect(HttpNotificationException.class);
+        exceptionRule.expectMessage("Error: Xml is invalid.");
+
+        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_XML, invalid_xml);
     }
 
     @Test

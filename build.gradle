@@ -20,6 +20,8 @@ dependencies {
     compile( [group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.0.2'])
     compile( [group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.3.6'])
     compile( [group: 'org.json', name: 'json', version: '20140107'])
+
+    implementation 'org.dom4j:dom4j:2.1.1'
     implementation 'com.google.code.gson:gson:2.8.5'
 
     testCompile(
