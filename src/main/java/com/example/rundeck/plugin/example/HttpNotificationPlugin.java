@@ -168,7 +168,7 @@ public class HttpNotificationPlugin {
             return false;
         }
 
-        if (statusCode >= 400) {
+        if (statusCode >= 300) {
             throwStatusCodeException(statusCode);
         }
 
@@ -211,7 +211,7 @@ public class HttpNotificationPlugin {
             return false;
         }
 
-        if (statusCode >= 400) {
+        if (statusCode >= 300) {
             throwStatusCodeException(statusCode);
         }
 
