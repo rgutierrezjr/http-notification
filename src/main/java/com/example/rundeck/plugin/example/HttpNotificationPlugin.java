@@ -253,26 +253,33 @@ public class HttpNotificationPlugin {
         if (code >= 300 && code < 400) {
             throw new HttpNotificationException("Error: Server responded with redirection. Code: " + code + ", Text: " + codeText);
         } else if (code >= 400 && code < 500) {
-            throw new HttpNotificationException("Error: Server responded with client side error. Code: " + code  + ", Text: " + codeText);
+            throw new HttpNotificationException("Error: Server responded with client side error. Code: " + code + ", Text: " + codeText);
         } else if (code >= 500 && code < 600) {
-            throw new HttpNotificationException("Error: Server responded with server error. Code: " + code  + ", Text: " + codeText);
+            throw new HttpNotificationException("Error: Server responded with server error. Code: " + code + ", Text: " + codeText);
         }
     }
 
     /**
-     * Simple helper method which determines whether or not the given body, type json, is valid.
-     * @param jsonString
-     * @return
+     * Simple helper method which determines if the given json (string) is valid.
+     *
+     * @param jsonString The json object as a string.
+     * @return True if valid, False if invalid.
      */
     public static boolean isValidJson(String jsonString) {
         try {
             gson.fromJson(jsonString, Object.class);
             return true;
-        } catch(com.google.gson.JsonSyntaxException ex) {
+        } catch (com.google.gson.JsonSyntaxException ex) {
             return false;
         }
     }
 
+    /**
+     * Simple helper method which determines if the given xml (string) is valid.
+     *
+     * @param xmlString The xml object as a string.
+     * @return True if valid, False if invalid.
+     */
     public static boolean isValidXml(String xmlString) {
         StringWriter sw;
 
