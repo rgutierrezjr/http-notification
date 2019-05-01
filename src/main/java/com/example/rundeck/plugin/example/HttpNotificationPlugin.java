@@ -12,6 +12,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
+import org.apache.commons.validator.routines.UrlValidator;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
@@ -115,6 +117,13 @@ public class HttpNotificationPlugin {
     public Boolean sendNotification(String url, String httpMethod, String contentType, String body) throws HttpNotificationException {
         if (url == null || url.isEmpty()) {
             throw new HttpNotificationException("Error: URL is required.");
+        } else {
+            String[] schemes = {"http","https"};
+            UrlValidator urlValidator = new UrlValidator(schemes);
+
+            if (!urlValidator.isValid(url)) {
+                throw new HttpNotificationException("Error: URL is invalid.");
+            }
         }
 
         if (httpMethod == null || httpMethod.isEmpty()) {

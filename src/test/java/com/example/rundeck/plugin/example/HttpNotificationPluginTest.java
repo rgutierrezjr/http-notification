@@ -10,6 +10,7 @@ public class HttpNotificationPluginTest {
     private final String null_url = null;
     private final String valid_url_post = "https://postman-echo.com/post";
     private final String valid_url_put = "https://postman-echo.com/put";
+    private final String invalid_url = "this_is_an_invalid_url";
 
     private final String blank_content_type = "";
     private final String null_content_type = null;
@@ -47,6 +48,14 @@ public class HttpNotificationPluginTest {
         exceptionRule.expectMessage("Error: URL is required.");
 
         notificationPlugin.sendNotification(blank_url, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+    }
+
+    @Test
+    public void testInvalidURL() throws HttpNotificationException {
+        exceptionRule.expect(HttpNotificationException.class);
+        exceptionRule.expectMessage("Error: URL is invalid.");
+
+        notificationPlugin.sendNotification(invalid_url, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, valid_json);
     }
 
     @Test
