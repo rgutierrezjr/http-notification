@@ -12,6 +12,16 @@ The user can also instantiate an instance of the utility with various HTTP clien
 
 The plugin provides logging and user friendly exception messaging.
 
+## Build
+
+    gradle clean
+    gradle build
+    
+## Fat Jar
+Jar file located in /build/libs
+    
+    gradle jar
+
 ## Dependencies
     compile( [group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'])
     compile( [group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'])
