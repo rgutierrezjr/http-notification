@@ -178,4 +178,28 @@ public class HttpNotificationPluginTest {
 
         assert result == true;
     }
+
+    @Test
+    public void testConnectionTimeoutSetterAndGetter() {
+        // notificationPlugin instantiated with default timeout values;
+        Long connectionTimeout = notificationPlugin.getConnectionTimeout();
+
+        assert connectionTimeout == HttpNotificationPlugin.DEFAULT_CONNECTION_TIMEOUT;
+
+        notificationPlugin.setConnectionTimeout(10000L);
+
+        assert notificationPlugin.getConnectionTimeout() == 10000L;
+    }
+
+    @Test
+    public void testSocketTimeoutSetterAndGetter() {
+        // notificationPlugin instantiated with default timeout values;
+        Long socketTimeout = notificationPlugin.getSocketTimeout();
+
+        assert socketTimeout == HttpNotificationPlugin.DEFAULT_SOCKET_TIMEOUT;
+
+        notificationPlugin.setSocketTimeout(3000L);
+
+        assert notificationPlugin.getSocketTimeout() == 3000L;
+    }
 }

@@ -1,32 +1,13 @@
-# Plugin Example
+# Http Notification Plugin
 
-This is my implementation for candidate consideration; specification HttpNotificationPlugin.
+This is my implementation for candidate consideration. Specification: HttpNotificationPlugin.
 
-## Building
+## Description
 
-    ./gradlew build
+The following plugin provides lightweight Http "webhook-like" notification functionality. 
 
-Runs all tests and produces:
+Given a url, the user can notify the recipient via HTTP (POST or PUT) with xml, json, or plain text.
 
-	build/libs/plugin-example-0.1.0-SNAPSHOT.jar
+The user can also instantiate an instance of the utility with various HTTP client configurations like connection and socket timeouts.
 
-## Testing
-
-    ./gradlew check
-
-Runs all tests
-
-## Install
-
-First, download the "Rundeck Launcher" [Rundeck](http://rundeck.org/downloads.html)
-
-    mkdir rundeck
-    cd rundeck
-    cp ../rundeck-launcher-2.10.2.jar .
-    mkdir libext
-    cp ../build/libs/plugin-example-0.1.0-SNAPSHOT.jar libext/
-
-## Run rundeck
-
-    java -jar rundeck-launcher-2.10.2.jar
-
+The plugin provides logging and user friendly exception messaging.

@@ -83,6 +83,7 @@ public class HttpNotificationPlugin {
      */
     public void setConnectionTimeout(Long connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
+        Unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
     }
 
     /**
@@ -101,10 +102,12 @@ public class HttpNotificationPlugin {
      */
     public void setSocketTimeout(Long socketTimeout) {
         this.socketTimeout = socketTimeout;
+        Unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
+
     }
 
     /**
-     * The following method will post a HTTP notification to the passed in url.
+     * The following method will post an HTTP notification to the passed in url.
      *
      * @param url         The designated endpoint accepting the notification.
      * @param httpMethod  The HTTP method to use.
