@@ -17,6 +17,11 @@ The plugin provides logging and user friendly exception messaging.
     gradle clean
     gradle build
     
+## Test
+Run test suite class.
+
+    gradle test
+    
 ## Fat Jar
 Jar file located in /build/libs
     
