@@ -66,7 +66,7 @@ public class HttpNotificationPlugin {
     /**
      * Getter method for connectionTimout.
      *
-     * @return
+     * @return Current connection timeout value.
      */
     public Long getConnectionTimeout() {
         return connectionTimeout;
@@ -75,7 +75,7 @@ public class HttpNotificationPlugin {
     /**
      * Setter method for connectionTimout.
      *
-     * @param connectionTimeout
+     * @param connectionTimeout New connection timeout value.
      */
     public void setConnectionTimeout(Long connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
@@ -85,7 +85,7 @@ public class HttpNotificationPlugin {
     /**
      * Getter method for socketTimeout.
      *
-     * @return
+     * @return Current socket timeout value.
      */
     public Long getSocketTimeout() {
         return socketTimeout;
@@ -94,7 +94,7 @@ public class HttpNotificationPlugin {
     /**
      * Setter method for socketTimout.
      *
-     * @param socketTimeout
+     * @param socketTimeout New socket timeout value.
      */
     public void setSocketTimeout(Long socketTimeout) {
         this.socketTimeout = socketTimeout;
