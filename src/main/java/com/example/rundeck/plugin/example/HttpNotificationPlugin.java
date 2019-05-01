@@ -1,7 +1,5 @@
 package com.example.rundeck.plugin.example;
 
-import com.dtolabs.rundeck.core.plugins.Plugin;
-import com.dtolabs.rundeck.plugins.descriptions.PluginDescription;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
@@ -24,8 +22,6 @@ import java.util.logging.Logger;
  * The following implementation Http notification plugin will post requests to the target url.
  * The user of this plugin can pass body content, content type, and HTTP method type.
  */
-@Plugin(service = "Notification", name = "http-notification")
-@PluginDescription(title = "HTTP Notification Plugin", description = "Rundeck's http notification plugin.")
 public class HttpNotificationPlugin {
 
     private static final Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);

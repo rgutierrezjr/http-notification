@@ -1,12 +1,8 @@
 version = '0.1.0-SNAPSHOT'
 defaultTasks 'clean','build'
 apply plugin: 'java'
-apply plugin: 'groovy'
 apply plugin: 'idea'
 sourceCompatibility = 1.8
-ext.rundeckPluginVersion= '1.2'
-ext.rundeckVersion= '2.10.2'
-
 
 repositories {
     mavenLocal()
@@ -14,7 +10,6 @@ repositories {
 }
 
 dependencies {
-    compile( [group: 'org.rundeck', name: 'rundeck-core', version: rundeckVersion, ext:'jar'])
     compile( [group: 'com.mashape.unirest', name: 'unirest-java', version: '1.4.9'])
     compile( [group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.6'])
     compile( [group: 'org.apache.httpcomponents', name: 'httpasyncclient', version: '4.0.2'])
@@ -27,23 +22,14 @@ dependencies {
     testCompile(
         [group: 'junit', name: 'junit', version: '4.10',ext:'jar']
     )
-
-    testCompile 'org.mockito:mockito-all:1.8.5'
-
-    testCompile "org.codehaus.groovy:groovy-all:2.3.7"
-    testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
 
-ext.pluginClassNames='com.example.rundeck.plugin.example.MyNotificationPlugin'
 jar {
     manifest {
-        attributes 'Rundeck-Plugin-Classnames': pluginClassNames
-        attributes 'Rundeck-Plugin-File-Version': version
-        attributes 'Rundeck-Plugin-Version': rundeckPluginVersion, 'Rundeck-Plugin-Archive': 'true'
+        attributes "Main-Class": "com.example.rundeck.plugin.example.HttpNotificationPlugin"
+    }
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.4.1'
-}
-
