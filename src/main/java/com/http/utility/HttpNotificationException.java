@@ -1,4 +1,4 @@
-package com.example.rundeck.plugin.example;
+package com.http.utility;
 
 /**
  * Custom exception for HttpNotificationPlugin.

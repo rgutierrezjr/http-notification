@@ -1,4 +1,4 @@
-package com.example.rundeck.plugin.example;
+package com.http.utility;
 
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
