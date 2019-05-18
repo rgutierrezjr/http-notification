@@ -1,10 +1,10 @@
-# Http Notification Plugin
+# Http Notification Utility
 
-This is my implementation for candidate consideration. Specification: HttpNotificationPlugin.
+Simple http notification function.
 
 ## Description
 
-The following plugin provides lightweight Http "webhook-like" notification functionality. 
+The following plugin provides lightweight Http notification functionality. 
 
 Given a url, the user can notify the recipient via HTTP (POST or PUT) with xml, json, or plain text.
 
