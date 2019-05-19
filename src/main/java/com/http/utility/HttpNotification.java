@@ -24,7 +24,7 @@ import java.util.logging.Logger;
  * The following implementation Http notification plugin will post requests to the target url.
  * The user of this plugin can pass body content, content type, and HTTP method type.
  */
-public class HttpNotificationPlugin {
+public class HttpNotification {
 
     private static final Logger LOGGER = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
     private static final Gson gson = new Gson();
@@ -37,6 +37,8 @@ public class HttpNotificationPlugin {
 
     private Long connectionTimeout;
     private Long socketTimeout;
+
+    private Unirest unirest = new Unirest();
 
     /*
         Supported HTTP methods.
@@ -55,13 +57,13 @@ public class HttpNotificationPlugin {
 
     public static final List<String> SUPPORTED_CONTENT_TYPES = Arrays.asList(CONTENT_JSON, CONTENT_TEXT, CONTENT_XML);
 
-    public HttpNotificationPlugin(Long connectionTimeout, Long socketTimeout) {
+    public HttpNotification(Long connectionTimeout, Long socketTimeout) {
 
         this.connectionTimeout = connectionTimeout != null && connectionTimeout > 0L ? connectionTimeout : DEFAULT_CONNECTION_TIMEOUT;
 
         this.socketTimeout = socketTimeout != null && socketTimeout > 0L ? socketTimeout : DEFAULT_SOCKET_TIMEOUT;
 
-        Unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
+        this.unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
 
     }
 
@@ -81,7 +83,7 @@ public class HttpNotificationPlugin {
      */
     public void setConnectionTimeout(Long connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
-        Unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
+        this.unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
     }
 
     /**
@@ -100,7 +102,7 @@ public class HttpNotificationPlugin {
      */
     public void setSocketTimeout(Long socketTimeout) {
         this.socketTimeout = socketTimeout;
-        Unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
+        this.unirest.setTimeouts(this.connectionTimeout, this.socketTimeout);
 
     }
 
@@ -174,7 +176,7 @@ public class HttpNotificationPlugin {
 
         try {
             if (contentType == CONTENT_JSON) {
-                HttpResponse<JsonNode> jsonResponse = Unirest.post(url)
+                HttpResponse<JsonNode> jsonResponse = unirest.post(url)
                         .header("Content-Type", contentType)
                         .body(body)
                         .asJson();
@@ -183,7 +185,7 @@ public class HttpNotificationPlugin {
                 statusText = jsonResponse.getStatusText();
 
             } else if (contentType == CONTENT_TEXT || contentType == CONTENT_XML) {
-                HttpResponse response = Unirest.post(url)
+                HttpResponse response = unirest.post(url)
                         .header("Content-Type", contentType)
                         .body(body)
                         .asString();
@@ -220,7 +222,7 @@ public class HttpNotificationPlugin {
 
         try {
             if (contentType == CONTENT_JSON) {
-                HttpResponse<JsonNode> jsonResponse = Unirest.put(url)
+                HttpResponse<JsonNode> jsonResponse = unirest.put(url)
                         .header("Content-Type", contentType)
                         .body(body)
                         .asJson();
@@ -229,7 +231,7 @@ public class HttpNotificationPlugin {
                 statusText = jsonResponse.getStatusText();
 
             } else if (contentType == CONTENT_TEXT || contentType == CONTENT_XML) {
-                HttpResponse response = Unirest.put(url)
+                HttpResponse response = unirest.put(url)
                         .header("Content-Type", contentType)
                         .body(body)
                         .asString();

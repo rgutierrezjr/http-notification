@@ -4,7 +4,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class HttpNotificationPluginTest {
+public class HttpNotificationTest {
 
     private final String blank_url = "";
     private final String null_url = null;
@@ -28,16 +28,16 @@ public class HttpNotificationPluginTest {
     private final String valid_text = "This is a notification";
 
     private final String valid_xml = "<notification>\n" +
-            "<from>Rundeck</from>\n" +
+            "<from>Ruben</from>\n" +
             "<message>This is a http notification.</message>\n" +
             "</notification>";
 
     private final String invalid_xml = "<notifications>\n" +
-            "<from>Rundeck<from>\n" +
+            "<from>Ruben<from>\n" +
             "<message>This is a http notification.</message>\n" +
             "</notification>";
 
-    HttpNotificationPlugin notificationPlugin = new HttpNotificationPlugin(0L, 0L);
+    HttpNotification notificationPlugin = new HttpNotification(0L, 0L);
 
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
@@ -47,7 +47,7 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: URL is required.");
 
-        notificationPlugin.sendNotification(blank_url, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+        notificationPlugin.sendNotification(blank_url, HttpNotification.HTTP_METHOD_PUT, HttpNotification.CONTENT_JSON, valid_json);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: URL is invalid.");
 
-        notificationPlugin.sendNotification(invalid_url, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+        notificationPlugin.sendNotification(invalid_url, HttpNotification.HTTP_METHOD_PUT, HttpNotification.CONTENT_JSON, valid_json);
     }
 
     @Test
@@ -63,7 +63,7 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: URL is required.");
 
-        notificationPlugin.sendNotification(null_url, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+        notificationPlugin.sendNotification(null_url, HttpNotification.HTTP_METHOD_PUT, HttpNotification.CONTENT_JSON, valid_json);
     }
 
     @Test
@@ -71,7 +71,7 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: HTTP method is required.");
 
-        notificationPlugin.sendNotification(valid_url_post, blank_method, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+        notificationPlugin.sendNotification(valid_url_post, blank_method, HttpNotification.CONTENT_JSON, valid_json);
     }
 
     @Test
@@ -79,15 +79,15 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: HTTP method is required.");
 
-        notificationPlugin.sendNotification(valid_url_post, null_method, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+        notificationPlugin.sendNotification(valid_url_post, null_method, HttpNotification.CONTENT_JSON, valid_json);
     }
 
     @Test
     public void testUnsupportedMethod() throws HttpNotificationException {
         exceptionRule.expect(HttpNotificationException.class);
-        exceptionRule.expectMessage("Error: HTTP method not supported. The following methods are supported: " + HttpNotificationPlugin.SUPPORTED_HTTP_METHODS.toString());
+        exceptionRule.expectMessage("Error: HTTP method not supported. The following methods are supported: " + HttpNotification.SUPPORTED_HTTP_METHODS.toString());
 
-        notificationPlugin.sendNotification(valid_url_post, unsupported_method, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+        notificationPlugin.sendNotification(valid_url_post, unsupported_method, HttpNotification.CONTENT_JSON, valid_json);
     }
 
     @Test
@@ -95,7 +95,7 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: Content type is required.");
 
-        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_PUT, blank_content_type, valid_json);
+        notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_PUT, blank_content_type, valid_json);
     }
 
     @Test
@@ -103,15 +103,15 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: Content type is required.");
 
-        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_PUT, null_content_type, valid_json);
+        notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_PUT, null_content_type, valid_json);
     }
 
     @Test
     public void testUnsupportedContentType() throws HttpNotificationException {
         exceptionRule.expect(HttpNotificationException.class);
-        exceptionRule.expectMessage("Error: Content type not supported. The following methods are supported: " + HttpNotificationPlugin.SUPPORTED_CONTENT_TYPES.toString());
+        exceptionRule.expectMessage("Error: Content type not supported. The following methods are supported: " + HttpNotification.SUPPORTED_CONTENT_TYPES.toString());
 
-        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_PUT, unsupported_content_type, valid_json);
+        notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_PUT, unsupported_content_type, valid_json);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: Notification body is required.");
 
-        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, blank_body);
+        notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_PUT, HttpNotification.CONTENT_JSON, blank_body);
     }
 
     @Test
@@ -127,7 +127,7 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: Notification body is required.");
 
-        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, null_body);
+        notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_PUT, HttpNotification.CONTENT_JSON, null_body);
     }
 
     @Test
@@ -135,26 +135,26 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: Json is invalid.");
 
-        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_JSON, invalid_json);
+        notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_POST, HttpNotification.CONTENT_JSON, invalid_json);
     }
 
     @Test
     public void testPostJsonNotification() throws HttpNotificationException {
-        Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+        Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_POST, HttpNotification.CONTENT_JSON, valid_json);
 
         assert result == true;
     }
 
     @Test
     public void testPutXmlNotification() throws HttpNotificationException {
-        Boolean result = notificationPlugin.sendNotification(valid_url_put, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_XML, valid_xml);
+        Boolean result = notificationPlugin.sendNotification(valid_url_put, HttpNotification.HTTP_METHOD_PUT, HttpNotification.CONTENT_XML, valid_xml);
 
         assert result == true;
     }
 
     @Test
     public void testPostXmlNotification() throws HttpNotificationException {
-        Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_XML, valid_xml);
+        Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_POST, HttpNotification.CONTENT_XML, valid_xml);
 
         assert result == true;
     }
@@ -164,26 +164,26 @@ public class HttpNotificationPluginTest {
         exceptionRule.expect(HttpNotificationException.class);
         exceptionRule.expectMessage("Error: Xml is invalid.");
 
-        notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_XML, invalid_xml);
+        notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_POST, HttpNotification.CONTENT_XML, invalid_xml);
     }
 
     @Test
     public void testPostTextNotification() throws HttpNotificationException {
-        Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotificationPlugin.HTTP_METHOD_POST, HttpNotificationPlugin.CONTENT_TEXT, valid_text);
+        Boolean result = notificationPlugin.sendNotification(valid_url_post, HttpNotification.HTTP_METHOD_POST, HttpNotification.CONTENT_TEXT, valid_text);
 
         assert result == true;
     }
 
     @Test
     public void testPutJsonNotification() throws HttpNotificationException {
-        Boolean result = notificationPlugin.sendNotification(valid_url_put, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_JSON, valid_json);
+        Boolean result = notificationPlugin.sendNotification(valid_url_put, HttpNotification.HTTP_METHOD_PUT, HttpNotification.CONTENT_JSON, valid_json);
 
         assert result == true;
     }
 
     @Test
     public void testPutTextNotification() throws HttpNotificationException {
-        Boolean result = notificationPlugin.sendNotification(valid_url_put, HttpNotificationPlugin.HTTP_METHOD_PUT, HttpNotificationPlugin.CONTENT_TEXT, valid_text);
+        Boolean result = notificationPlugin.sendNotification(valid_url_put, HttpNotification.HTTP_METHOD_PUT, HttpNotification.CONTENT_TEXT, valid_text);
 
         assert result == true;
     }
@@ -193,7 +193,7 @@ public class HttpNotificationPluginTest {
         // notificationPlugin instantiated with default timeout values;
         Long connectionTimeout = notificationPlugin.getConnectionTimeout();
 
-        assert connectionTimeout == HttpNotificationPlugin.DEFAULT_CONNECTION_TIMEOUT;
+        assert connectionTimeout == HttpNotification.DEFAULT_CONNECTION_TIMEOUT;
 
         notificationPlugin.setConnectionTimeout(10000L);
 
@@ -205,7 +205,7 @@ public class HttpNotificationPluginTest {
         // notificationPlugin instantiated with default timeout values;
         Long socketTimeout = notificationPlugin.getSocketTimeout();
 
-        assert socketTimeout == HttpNotificationPlugin.DEFAULT_SOCKET_TIMEOUT;
+        assert socketTimeout == HttpNotification.DEFAULT_SOCKET_TIMEOUT;
 
         notificationPlugin.setSocketTimeout(3000L);
 
